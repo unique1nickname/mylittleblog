@@ -1,13 +1,51 @@
 from rest_framework import serializers
+from .models import Post, UserComments, UserLikes
 
 
 class PostSerializer(serializers.ModelSerializer):
-    ...
+    # is_liked = serializers.BooleanField()
+    is_liked = serializers.SerializerMethodField()
 
+    class Meta:
+        model = Post
+        fields = (
+            'id',
+            'user',
+            'title',
+            'text',
+            'like_count',
+            'comment_count',
+            # 'likes',
+            'comments',
+            'created_at',
+            'is_liked',
+        )
+        read_only_fields = (
+            'user',
+            'like_count',
+            'comment_count',
+            # 'likes',
+            'comments',
+            'is_liked'
+        ) # закончиь писать
+    
+    def get_is_liked(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return UserLikes.objects.filter(user=user, post=obj).exists()
 
-class UserLikesSerializer(serializers.ModelSerializer):
-    ...
+ 
+#  а этому вообще нужен сериалайзер?? удалить если не пригодится
+# вообще - нужен для get по лайкам поста
+# class UserLikesSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = UserLikes
+#         fields = ('pk', 'user', 'post')
+#         read_only_fields = ('user', 'post')
 
 
 class UserCommentsSerializer(serializers.ModelSerializer):
-    ...
+    class Meta:
+        model = UserComments
+        fields = ('id', 'user', 'post', 'text', 'created_at')
+        read_only_fields = ('user', 'post')

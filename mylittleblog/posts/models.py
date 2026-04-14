@@ -6,11 +6,18 @@ class Post(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length=256)
     text = models.TextField()
-    like_count = models.PositiveIntegerField()
-    comment_count = models.PositiveIntegerField()
+    like_count = models.PositiveIntegerField(default=0)
+    comment_count = models.PositiveIntegerField(default=0)
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, through="UserLikes", related_name='liked_posts')
     comments = models.ManyToManyField(settings.AUTH_USER_MODEL, through="UserComments", related_name='commented_posts')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [models.Index(fields=['-created_at'])]
+
+    def __str__(self):
+        return f"{self.title} by {self.user}" # изменить, чтоб вместо id был username
 
 
 class UserLikes(models.Model):
