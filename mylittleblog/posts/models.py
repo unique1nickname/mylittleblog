@@ -11,6 +11,7 @@ class Post(models.Model):
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, through="UserLikes", related_name='liked_posts')
     comments = models.ManyToManyField(settings.AUTH_USER_MODEL, through="UserComments", related_name='commented_posts')
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -38,3 +39,4 @@ class UserComments(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
