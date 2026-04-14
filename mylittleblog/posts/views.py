@@ -3,6 +3,7 @@ from django.db.models import F
 from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets, filters, generics, mixins, permissions, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,6 +19,12 @@ class PostViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=['get'])
+    def my(self, request):
+        posts = self.queryset.filter(user=request.user)
+        serializer = self.get_serializer(posts, many=True)
+        return Response(serializer.data)
 
 
 class UserCommentsViewSet(viewsets.ModelViewSet):
